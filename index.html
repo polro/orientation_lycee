@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr" >
+  <head>
+    <title>Lycée Marx Dormoy</title>
+    <meta name="author" content="Romuald Pol" />
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="icon" href="images/favicon.ico" />
+  </head>
+  <body>
+
+    <div style="display:flex;justify-content: space-around;">
+      <img src="images/logo.png" alt="logo" width="120" height="120"/>
+      <h1>Site de saisi des vœux d'orientation<br/>du lycée Marx Dormoy</h1>
+    </div>
+    <ul class="menu">
+      <li class="menu"><a href="bilan-seconde.php" class="menu">Bilan de 2<sup>nd</sup></a></li>
+      <li class="menu"><a href="bilan-premiere.php" class="menu">Bilan de 1<sup>ère</sup></a></li>
+      <li class="menu active"  style="float:right"><a href="Disconnect.php" class="menu">Déconnexion</a></li>
+    </ul>
+  
+    <h1>Bienvenue</h1> 
+    <p>Vous êtes sur le site de saisi des vœeux des élèves du lycée Marx Dormoy.</p>
+    <p>Pour pouvoir continuer sur ce site, vous devez d'abord vous connecter.</p> 
+
+    <form action="VerifId.php" method="post">
+      Votre login : <input type="text" name="login">
+      <br />
+      Votre mot de passe : <input type="password" name="pwd"><br />
+      <input type="submit" value="Connexion">
+    </form>
+  </body>
+</html>

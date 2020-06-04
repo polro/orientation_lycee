@@ -1,0 +1,86 @@
+/*Page menu*/
+ul.menu {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #0404B4;
+}
+
+li.menu {
+  float: left;
+}
+
+li.menu a.menu {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+/* Change the link color to #111 (black) on hover */
+li.menu a.menu:hover {
+  background-color: #111;
+}
+p.menu{
+  color: #0A0A2A;
+  font-style: italic;}
+/* Change active url */
+li.menu.active{
+  background-color: #0B0B61;
+}
+
+#space-menu{
+    margin-bottom: 50px;
+}
+
+
+/*Modification des couleur des voies*/
+.generale {
+  background-color : lightblue;
+}
+.techno {
+  background-color : lightgreen;
+}
+.autre {
+  background-color : bisque;
+}
+.option1 {
+  background-color : #FFBF00;
+}
+.option2 {
+  background-color : #FF8000;
+}
+
+td.choix {
+  padding: 10px 5px 10px 5px;
+  border-style: solid;
+  border-width: 3px 0px 3px 0px;
+  text-align: center;
+}
+
+
+/*Page bilan*/
+td.bilan, th.bilan{
+  padding: 10px 5px 10px 5px;
+  border-style: solid;
+  border-width: 2px 2px 2px 2px;
+  text-align: center;
+}
+table.bilan{
+  border-collapse: collapse;
+  margin: auto;
+  margin-top:50px;
+}
+td.vide{
+  background-color:#D8D8D8;
+}
+
+/*Modification du texte*/
+h2 {
+	color: #0404B4;
+}
+
+h3 {
+	color: #8D0101;
+}
