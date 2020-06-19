@@ -1,4 +1,6 @@
 <?php
+$lycee = "Nom du lycée";
+
 $servername = "servername";
 $username = "username";
 $password = "password";
