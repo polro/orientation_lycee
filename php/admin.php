@@ -128,5 +128,5 @@ if ($_SESSION['acces'] == '1'){
 }
 
 else{
-  Header('Location: ../index.html');}
+  Header('Location: ../index.php');}
 ?>
