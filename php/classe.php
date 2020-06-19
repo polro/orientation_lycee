@@ -9,7 +9,7 @@ if (isset($_SESSION['nom'])){
 
   if (!isset($_POST['valider']) and !isset($_POST['reset']) and !isset($_POST['reset2'])){ // Page pour choisir
     
-    if ($_SESSION['login'] == 'admin') {
+    if ($_SESSION['acces'] == '1') {
     	$sql = 'SELECT DATE_FORMAT(modif, "%e/%m/%Y à %H:%i:%s") as modif FROM voeux_pp WHERE Classe="'.$_SESSION['classe'].'"';
 		$req = $conn->query($sql);
 		$result = mysqli_fetch_assoc($req);
@@ -18,20 +18,20 @@ if (isset($_SESSION['nom'])){
 
 
     //On récupère la base de données des vœeux
-    echo '<h2>Vous êtes sur la page des choix de vœux de la classe '.$_SESSION['classe'].'</h2>
-<p>Vous pouvez modifier les résultats dans la liste ci-dessous. <strong>Il faut valider les choix à la fin !</strong></p>';
+    echo '<p>Vous pouvez modifier les résultats dans la liste ci-dessous. <strong>Il faut valider les choix à la fin !</strong></p>';
 
 
-    echo '<table><tr><td><form method="post" action="classe.php">
+    echo '<div style="display: flex;justify-content: space-around; max-width: 1000px;"><form method="post" action="classe.php">
             <input type="submit" name="reset" value="Réinitialiser les vœux">
-          </form></td>
-          <td><form method="post" action="eleves.php?option=ajout">
+          </form>
+          <form method="post" action="eleves.php?option=ajout">
             <input type="submit" name="ajout" value="Ajouter un.e élève">
-          </form></td>
-          <td><form method="post" action="eleves.php?option=multi_ajout">
+          </form>
+          <form method="post" action="eleves.php?option=multi_ajout">
             <input type="submit" name="ajout" value="Ajouter plusieurs élèves">
-          </form></td></tr></table>
-</div>';
+          </form>
+          <div id="bouton"><input type="button" value="Afficher récap" onClick="masquer_afficher()"></div></td>
+          </div>';
 
 //Affichage du tableau récapitulatif
 	if (in_array($_SESSION['classe'],array('2A','2B','2C','2D','2E','2F','2G','2H'))) {
@@ -40,7 +40,7 @@ if (isset($_SESSION['nom'])){
 		$array_spe = array('HGGSP'=>'g_spe_1','HLP'=>'g_spe_2', 'LLCE'=>'g_spe_3', 'Maths'=>'g_spe_4', 'SPC'=>'g_spe_5', 'SVT'=>'g_spe_6', 'SES'=>'g_spe_7', 'STMG'=>'t_spe_1', 'Latin-o'=>'option1', 'HDA'=>'option2', 'Alleuro'=>'option3', 'Mathscomp'=>'option4','Mathsexp'=>'option5','DGEMC'=>'option6');
 	}
 
-	echo '<table style="border-collapse: collapse;border: solid;text-align: center;margin: 30px 0px 30px 0px;">
+	echo '<div id="recap" style="display: none;"><table style="border-collapse: collapse;border: solid;text-align: center;margin: 30px 0px 30px 0px;">
 	<caption>Tableau récapitulatif des vœux</caption>
 	<tr style="border: solid;">
 	  <th style="border: solid;">Spécialités</th>';
@@ -53,7 +53,7 @@ if (isset($_SESSION['nom'])){
 	<tr><th style="border: solid;">Nombres de vœux</th>';
 
 	foreach ($array_spe as $spe) {
-		if (in_array($_SESSION['classe'],array('2A','2B','2C','2D','2E','2F','2G','2H'))) {
+		if (in_array($_SESSION['classe'],$_SESSION['liste_classes_seconde'])) {
 			$sql = 'SELECT COUNT(*) FROM voeux_eleves WHERE (Classe="'.$_SESSION['classe'].'" AND (g_choix_1 ="'.$spe.'" OR g_choix_2 ="'.$spe.'" OR g_choix_3 ="'.$spe.'" OR g_choix_4 ="'.$spe.'" OR t_choix_1 ="'.$spe.'" OR t_choix_2 ="'.$spe.'" OR a_choix_1 ="'.$spe.'")) ';
 		} else {
 			$sql = 'SELECT COUNT(*) FROM voeux_eleves WHERE (Classe="'.$_SESSION['classe'].'" AND (term_choix_1 ="'.$spe.'" OR term_choix_2 ="'.$spe.'" OR term_choix_3 ="'.$spe.'" OR term_choix_4 ="'.$spe.'" OR term_choix_5 ="'.$spe.'" OR term_choix_6 ="'.$spe.'")) ';
@@ -63,9 +63,9 @@ if (isset($_SESSION['nom'])){
 		echo '<td style="border: solid;">'.$count['COUNT(*)'].'</td>';
 	}
 
-	echo '</tr></table>';
+	echo '</tr></table></div>';
 
-    if (in_array($_SESSION['classe'],array('2A','2B','2C','2D','2E','2F','2G','2H'))){
+    if (in_array($_SESSION['classe'],$_SESSION['liste_classes_seconde'])){
     //Affichage du tableau des vœux de SECONDE
     echo '
     <p>Seul les 3 premiers choix de la voie générale et le premier choix de la voie technologique sont comptés pour déterminer le nombre de groupes de la page bilan. 
@@ -278,13 +278,14 @@ if (isset($_SESSION['nom'])){
 
 
     //Affichage du tableau des vœux de PREMIÈRE
-    elseif (in_array($_SESSION['classe'],array('1A','1B','1C','1D','1E'))){
+    elseif (in_array($_SESSION['classe'],$_SESSION['liste_classes_premiere'])){
 
     echo '
-    <p style="margin-bottom:50px;">Pour chaque élève, vous devez choisir les deux spécialités qu\'il ou elle veut garder.
+    <p style="margin-bottom:20px;">Pour chaque élève, vous devez choisir les deux spécialités qu\'il ou elle veut garder.
     <br/>Puis s\'il ou elle le souhaite une ou deux option(s) parmi le pack 1 : Latin, HDA, Allemand euro.
     <br/>Puis s\'il ou elle le souhaite une option parmi le pack 2 : Mathématiques expertes ; Mathématiques complémentaires ; Droit et Grands Enjeux du Monde Contemporain.</p>
     <p><strong>Attention, il faut bien le préciser aux élèves : Le fait de choisir des spécialités ou des options ne vaut pas inscription, cela dépendra des spécialités ouvertes et des contraintes d\'emploi du temps pour les options (notamment pour le choix Latin+HDA).</strong></p>
+    <p>La dernière mise à jour à eu lieu le '.$_SESSION['date_modif'].'</p>
 
     <form name="voeux" method="post" action="classe.php">
       <table style="border-collapse: collapse;">
@@ -379,14 +380,17 @@ if (isset($_SESSION['nom'])){
             $choix_selected['choix_6'][0] = 'selected';
           }
 
+          if (($row['term_choix_1'] == '') | ($row['term_choix_2'] == '')) {
+          	$voeux_manquant = 'style="color: red;border-color: black;"';
+          } else {$voeux_manquant = '';}
           
 
           // On affiche chaque ligne du tableau
           echo '
             <tr>
-              <td class="choix">'.$row['Nom'].'</td>
-              <td class="choix" width="25px"><a href="eleves.php?id='.$row["ID"].'&option=modif" title="Modifier le nom ou la classe de l\'élève"><img src="images/modifier.jpeg" width="20px" height="20px" alt="Modifier"></a></td>
-              <td class="choix" width="25px"><a href="eleves.php?id='.$row["ID"].'&option=supprimer" title="Supprimer l\'élève de la base de données"><img src="images/supprimer.jpeg" width="20px" height="20px"></a></td>
+              <td class="choix" '.$voeux_manquant.'>'.$row['Nom'].'</td>
+              <td class="choix" width="25px"><a href="eleves.php?id='.$row["ID"].'&option=modif" title="Modifier le nom ou la classe de l\'élève"><img src="../images/modifier.jpeg" width="20px" height="20px" alt="Modifier"></a></td>
+              <td class="choix" width="25px"><a href="eleves.php?id='.$row["ID"].'&option=supprimer" title="Supprimer l\'élève de la base de données"><img src="../images/supprimer.jpeg" width="20px" height="20px"></a></td>
               <td class="generale choix"><select name="'.$choix1.'">
               <OPTION value = "" >
               <OPTION value = "HGGSP" '.$choix_selected['choix_1'][0].'>Hist.-Géo GSP
@@ -457,7 +461,7 @@ if (isset($_SESSION['nom'])){
 
 
         //Modif élèves de SECONDE
-        if (in_array($_SESSION['classe'],array('2A','2B','2C','2D','2E','2F','2G','2H'))){
+        if (in_array($_SESSION['classe'],$_SESSION['liste_classes_seconde'])){
 
           $set = 'g_choix_1="'.$conversion_vers_db[$_POST['choix1_'.$id]].'", g_choix_2="'.$conversion_vers_db[$_POST['choix2_'.$id]].'", g_choix_3="'.$conversion_vers_db[$_POST['choix3_'.$id]].'", g_choix_4="'.$conversion_vers_db[$_POST['choix4_'.$id]].'", g_choix_5="'.$conversion_vers_db[$_POST['choix5_'.$id]].'", t_choix_1="'.$conversion_vers_db[$_POST['choix6_'.$id]].'", t_choix_2="'.$conversion_vers_db[$_POST['choix7_'.$id]].'", a_choix_1="'.$conversion_vers_db[$_POST['choix8_'.$id]].'"';
 
@@ -474,7 +478,7 @@ if (isset($_SESSION['nom'])){
         if ($conn->query($sql) === TRUE) {echo "";}else {$ok = False;}
        
 
-     if (in_array($_SESSION['classe'],array('2A','2B','2C','2D','2E','2F','2G','2H'))){
+     if (in_array($_SESSION['classe'],$_SESSION['liste_classes_seconde'])){
         // On cherche à savoir si l'élève de seconde à fait un choix dans la voie concernée
         if (($_POST['choix1_'.$id]=='') and ($_POST['choix2_'.$id]=='') and ($_POST['choix3_'.$id]=='') and ($_POST['choix4_'.$id]=='') and ($_POST['choix5_'.$id]=='')){
           $sql = 'UPDATE voeux_eleves SET voeux_g="0" WHERE ID='.$id;
@@ -514,7 +518,7 @@ if (isset($_SESSION['nom'])){
 
       if ($ok){
         echo '<h2>Bravo vous avez bien travaillé !</h2>';
-        if ($_SESSION['login'] != 'admin' and in_array($_SESSION['classe'],array('2A','2B','2C','2D','2E','2F'))){
+        if ($_SESSION['login'] != 'admin' and in_array($_SESSION['classe'],$_SESSION['liste_classes_seconde'])) {
           if (getdate()['seconds']%3 == 0){echo '<img src="images/valider.jpg" alt="valider"/>';}}
         echo '<p>La mise à jour a été faite, <a href="classe.php">cliquez ici</a> pour voir le résultat</p>';}
       else{echo '<p>Il y a un problème dans la mise à jour, prévenez Romuald !</p>';}
@@ -531,7 +535,7 @@ if (isset($_SESSION['nom'])){
   // Si l'utilisateur a confirmer la réinitialisation
   elseif (isset($_POST['reset2'])){
     foreach ($_SESSION['id_modif'] as $id){
-      if (in_array($_SESSION['classe'],array('2A','2B','2C','2D','2E','2F','2G','2H'))){
+      if (in_array($_SESSION['classe'],$_SESSION['liste_classes_seconde'])){
         $set = 'g_choix_1="", g_choix_2="", g_choix_3="", g_choix_4="", g_choix_5="", voeux_g="0", t_choix_1="", t_choix_2="",voeux_t="0", a_choix_1="", voeux_a="0"';
       }else{
         $set = 'term_choix_1="", term_choix_2="", term_choix_3="", term_choix_4="", term_choix_5="", term_choix_6=""';
@@ -552,9 +556,12 @@ if (isset($_SESSION['nom'])){
       $_SESSION['date_modif'] = $result['modif'];
 
   }
-  echo '  </body>
+  echo '  </div>
+  <footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+</footer>
+</body>
 </html>';
     $conn->close();
 }
-else{Header('Location:../index.html');}
+else{Header('Location:../index.php');}
 ?>

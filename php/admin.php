@@ -2,7 +2,7 @@
 // Démarrage de la session
 session_start();
 
-if ($_SESSION['login'] == 'admin'){
+if ($_SESSION['acces'] == '1'){
 
   if ($_GET['modif_classe'] <> '') {
   	$_SESSION['classe'] = $_GET['modif_classe'];
@@ -10,50 +10,39 @@ if ($_SESSION['login'] == 'admin'){
     
   } else {
     include 'menu.php';
-    include 'connect.php';
+    
     echo '
     <form style="padding: 20px 0px 0px 50px;" action="admin.php" method="get">
-      <table>
+      <table style="min-width: 700px;">
         <caption>Modifier les vœux d\'une classe</caption>
-        <tr>
-          <td><input type="submit" name="modif_classe" value="2A"></td>
-          <td><input type="submit" name="modif_classe" value="2B"></td>
-          <td><input type="submit" name="modif_classe" value="2C"></td>
-          <td><input type="submit" name="modif_classe" value="2D"></td>
-          <td><input type="submit" name="modif_classe" value="2E"></td>
-          <td><input type="submit" name="modif_classe" value="2F"></td>
-          <td><input type="submit" name="modif_classe" value="2G"></td>
-          <td><input type="submit" name="modif_classe" value="2H"></td>
+        <tr>';
+    foreach ($_SESSION['liste_classes_seconde'] as $classe) {
+    	echo '<td><input type="submit" name="modif_classe" value="'.$classe.'"></td>';
+    }        
+    echo '
         </tr>
-        <tr>
-          <td><input type="submit" name="modif_classe" value="1A"></td>
-          <td><input type="submit" name="modif_classe" value="1B"></td>
-          <td><input type="submit" name="modif_classe" value="1C"></td>
-          <td><input type="submit" name="modif_classe" value="1D"></td>
-          <td><input type="submit" name="modif_classe" value="1E"></td>
-        </tr>
+        <tr>';
+    foreach ($_SESSION['liste_classes_premiere'] as $classe) {
+    	echo '<td><input type="submit" name="modif_classe" value="'.$classe.'"></td>';
+    }  
+        
+    echo '</tr>
       </table>
     </form>
     <form style="padding: 50px 0px 0px 50px;" action="admin.php" method="get">
-      <table>
+      <table style="min-width: 700px;">
         <caption>Supprimer tous les élèves d\'une classe ?</caption>
-        <tr>
-          <td><input type="submit" name="suppr_classe" value="2A"></td>
-          <td><input type="submit" name="suppr_classe" value="2B"></td>
-          <td><input type="submit" name="suppr_classe" value="2C"></td>
-          <td><input type="submit" name="suppr_classe" value="2D"></td>
-          <td><input type="submit" name="suppr_classe" value="2E"></td>
-          <td><input type="submit" name="suppr_classe" value="2F"></td>
-          <td><input type="submit" name="suppr_classe" value="2G"></td>
-          <td><input type="submit" name="suppr_classe" value="2H"></td>
+        <tr>';
+    foreach ($_SESSION['liste_classes_seconde'] as $classe) {
+          echo '<td><input type="submit" name="suppr_classe" value="'.$classe.'"></td>';
+    }
+    echo '
         </tr>
-        <tr>
-          <td><input type="submit" name="suppr_classe" value="1A"></td>
-          <td><input type="submit" name="suppr_classe" value="1B"></td>
-          <td><input type="submit" name="suppr_classe" value="1C"></td>
-          <td><input type="submit" name="suppr_classe" value="1D"></td>
-          <td><input type="submit" name="suppr_classe" value="1E"></td>
-        </tr>
+        <tr>';
+    foreach ($_SESSION['liste_classes_premiere'] as $classe) {
+          echo '<td><input type="submit" name="suppr_classe" value="'.$classe.'"></td>';
+    }
+    echo '</tr>
       </table>
     </form>';
 
@@ -129,9 +118,13 @@ if ($_SESSION['login'] == 'admin'){
   	  }
     }
 
-    echo '</body>
+    echo '  </div>
+<footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+</footer>
+    </body>
        </html> ';
   }
+  $conn->close();
 }
 
 else{

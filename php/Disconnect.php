@@ -8,5 +8,5 @@ session_unset();
 session_destroy();
 
 //Redirection
-Header('Location:../index.html');
+Header('Location:../index.php');
 ?>

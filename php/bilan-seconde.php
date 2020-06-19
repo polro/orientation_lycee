@@ -4,164 +4,132 @@ session_start();
 
 if (isset($_SESSION['nom'])){
 
-  include 'connect.php';
-  include 'decrypt_db.php';
+    include 'connect.php';
+    include 'decrypt_db.php';
 
-  // On affiche l'entête de la page 
-  include 'menu.php';
-
-  $sql = 'SELECT MAX(DATE_FORMAT(modif, "%e/%m/%Y à %Hh %i")) as modif FROM voeux_pp WHERE Classe="2A" OR Classe="2B" OR Classe="2C" OR Classe="2D" OR Classe="2E" OR Classe="2F" OR Classe="2G" OR Classe="2H"';
-  $req = $conn->query($sql);
-  $result = $req->fetch_assoc();
-  echo '<div class="noimprim">
-    <p>La dernière mise à jour du lycée en seconde a été faite le '.$result['modif'].'.</p>';
-
-
-
-// On regarde les vœux manquant
-$voeux_manquant_2a = 0;$voeux_manquant_2b = 0;$voeux_manquant_2c = 0;
-$voeux_manquant_2d = 0;$voeux_manquant_2e = 0;$voeux_manquant_2f = 0;
-$voeux_manquant_2g = 0;$voeux_manquant_2h = 0;
-$voeux_multiples = 0;
-$classes = array('2A','2B','2C','2D','2E','2F','2G','2H');
-
-foreach ($classes as $classe){
-  $sql = 'SELECT voeux_g, voeux_t, voeux_a FROM voeux_eleves WHERE Classe="'.$classe.'"';
-  $req = $conn->query($sql);
-  while($eleve = $req->fetch_assoc()) {
-    if ($eleve['voeux_g']+$eleve['voeux_t']+$eleve['voeux_a'] == 0){
-      switch ($classe){
-        case '2A':
-          $voeux_manquant_2a++;
-          break;
-        case '2B':
-          $voeux_manquant_2b++;
-          break;
-        case '2C':
-          $voeux_manquant_2c++;
-          break;
-        case '2D':
-          $voeux_manquant_2d++;
-          break;
-        case '2E':
-          $voeux_manquant_2e++;
-          break;
-        case '2F':
-          $voeux_manquant_2f++;
-          break;
-        case '2G':
-          $voeux_manquant_2g++;
-          break;
-        case '2H':
-          $voeux_manquant_2h++;
-          break;
-      } //fin switch
-    } //fin if
+  	// On affiche l'entête de la page 
+  	include 'menu.php';
   
-    if ($eleve['voeux_g']+$eleve['voeux_t']+$eleve['voeux_a'] > 1){
-      $voeux_multiples++;}
+  	$liste_classes = '("'.join('","',$_SESSION['liste_classes_seconde']).'");';
+  	$sql = 'SELECT MAX(modif) as modif FROM voeux_pp WHERE Classe IN '.$liste_classes;
+  	$req = $conn->query($sql);
+  	$result = $req->fetch_assoc();
+  	echo '<div class="noimprim">
+    <p>La dernière mise à jour du lycée en seconde a été faite le '.date_format(date_create($result['modif']),'d/m/Y à H:i').'.</p>';
 
-  } //fin while
-} //fin foreach
 
-$total_manquant = $voeux_manquant_2a+$voeux_manquant_2b+$voeux_manquant_2c+$voeux_manquant_2d+$voeux_manquant_2e+$voeux_manquant_2f+$voeux_manquant_2g+$voeux_manquant_2h;
 
-echo '<p>Il y a <strong>'.$voeux_multiples.' vœux multiples</strong>, i.e. des élèves ont fait des choix dans au moins 2 voies (générale, technologique, professionnelle). 
-<br/><br/><strong>Il manque encore '.$total_manquant.' élèves</strong> dont les vœux n\'ont pas été saisis. Voici la répartition :</p>
+	// On regarde les vœux manquant et multiple
+	$voeux_manquant = array_pad(array(), count($_SESSION['liste_classes_seconde']), 0);
+	$voeux_multiple = 0;
+	foreach ($_SESSION['liste_classes_seconde'] as $classe) {
+		$sql_voeux = 'SELECT voeux_g, voeux_t, voeux_a FROM voeux_eleves WHERE Classe="'.$classe.'";';
+  		$req_voeux = $conn->query($sql_voeux);
+  		while($eleve = $req_voeux->fetch_assoc()) {
+  			if ($eleve['voeux_g']+$eleve['voeux_t']+$eleve['voeux_a'] == 0){
+  				$voeux_manquant[array_search($classe, $_SESSION['liste_classes_seconde'])]++;
+  			}
+  			if (($eleve['voeux_g']+$eleve['voeux_t']+$eleve['voeux_a']) > 1){
+  				$voeux_multiple++;
+  			}
+  		}
+	}
+
+	if ($voeux_multiple > 0) {
+		echo '<p>Il y a <strong>'.$voeux_multiple.' '.(array_sum($voeux_multiple) == 1 ? 'vœu multiple</strong>, i.e. un élève a' : 'vœux multiples</strong>, i.e. des élèves ont').' fait des choix dans au moins 2 voies (générale, technologique, professionnelle).</p>';
+	}
+	if (array_sum($voeux_manquant) > 0) {
+		echo '<strong>Il manque encore '.array_sum($voeux_manquant).' élève'.(array_sum($voeux_manquant) == 1 ? '' : 's').'</strong> dont les vœux n\'ont pas été saisis. Voici la répartition :</p>
 <table>
   <tr>
-    <th class="bilan">Classe</th>
-    <th class="bilan">2A</th>
-    <th class="bilan">2B</th>
-    <th class="bilan">2C</th>
-    <th class="bilan">2D</th>
-    <th class="bilan">2E</th>
-    <th class="bilan">2F</th>
-    <th class="bilan">2G</th>
-    <th class="bilan">2H</th>
+    <th class="bilan">Classe</th>';
+		foreach ($_SESSION['liste_classes_seconde'] as $classe) {
+			echo '<th class="bilan">'.$classe.'</th>';
+		}
+
+		echo '
   </tr>
   <tr>
-    <td class="bilan">Nbr d\'élèves<br/>manquants</td>
-    <td class="bilan">'.$voeux_manquant_2a.'</td>
-    <td class="bilan">'.$voeux_manquant_2b.'</td>
-    <td class="bilan">'.$voeux_manquant_2c.'</td>
-    <td class="bilan">'.$voeux_manquant_2d.'</td>
-    <td class="bilan">'.$voeux_manquant_2e.'</td>
-    <td class="bilan">'.$voeux_manquant_2f.'</td>
-    <td class="bilan">'.$voeux_manquant_2g.'</td>
-    <td class="bilan">'.$voeux_manquant_2h.'</td>
+    <td class="bilan">Nbr d\'élèves<br/>manquants</td>';
+
+	  	foreach ($_SESSION['liste_classes_seconde'] as $classe) {
+			echo '<th class="bilan">'.$voeux_manquant[array_search($classe, $_SESSION['liste_classes_seconde'])].'</th>';
+		}
+
+	    echo '
   </tr>
 </table>
 </div>';
+}
 
 
 //On prépare le tableau
-$nbr_choix = array('HGGSP'=>array(0,0,0,0), 'HLP'=>array(0,0,0,0), 'LLCE'=>array(0,0,0,0), 'Maths'=>array(0,0,0,0), 'SPC'=>array(0,0,0,0), 'SVT'=>array(0,0,0,0), 'SES'=>array(0,0,0,0), 'Ing'=>array(0), 'Num'=>array(0), 'Latin'=>array(0), 'Arts'=>array(0), 'STMG'=>array(0,0), 'ST2S'=>array(0,0), 'STI2D'=>array(0,0), 'STD2A'=>array(0,0), 'STL'=>array(0,0), 'Pro'=>array(0), 'Autre'=>array(0));
+	$nbr_choix = array('HGGSP'=>array(0,0,0,0), 'HLP'=>array(0,0,0,0), 'LLCE'=>array(0,0,0,0), 'Maths'=>array(0,0,0,0), 'SPC'=>array(0,0,0,0), 'SVT'=>array(0,0,0,0), 'SES'=>array(0,0,0,0), 'Ing'=>array(0), 'Num'=>array(0), 'Latin'=>array(0), 'Arts'=>array(0), 'STMG'=>array(0,0), 'ST2S'=>array(0,0), 'STI2D'=>array(0,0), 'STD2A'=>array(0,0), 'STL'=>array(0,0), 'Pro'=>array(0), 'Autre'=>array(0));
 
-$nbr_choix_min = array('HGGSP'=>array(0,0,0,0), 'HLP'=>array(0,0,0,0), 'LLCE'=>array(0,0,0,0), 'Maths'=>array(0,0,0,0), 'SPC'=>array(0,0,0,0), 'SVT'=>array(0,0,0,0), 'SES'=>array(0,0,0,0));
+	$nbr_choix_min = array('HGGSP'=>array(0,0,0,0), 'HLP'=>array(0,0,0,0), 'LLCE'=>array(0,0,0,0), 'Maths'=>array(0,0,0,0), 'SPC'=>array(0,0,0,0), 'SVT'=>array(0,0,0,0), 'SES'=>array(0,0,0,0));
 
-$sql = 'SELECT Nom, g_choix_1, g_choix_2, g_choix_3, g_choix_4, g_choix_5, voeux_g, voeux_t, voeux_a FROM voeux_eleves WHERE classe IN ("2A","2B","2C","2D","2E","2F","2G","2H")';
-$result = $conn->query($sql);
-if ($result->num_rows > 0) {
-  while($eleve = $result->fetch_assoc()) {
-    if ($eleve['voeux_g'] == 1){
-      for ($i=1;$i<=4;$i++){
-        $nbr_choix[$conversion_depuis_db[$eleve['g_choix_'.$i]]][$i-1]++;
-        if ((($eleve['voeux_t']+$eleve['voeux_a']) == 0) and $eleve['g_choix_5'] == '') {
-          $nbr_choix_min[$conversion_depuis_db[$eleve['g_choix_'.$i]]][$i-1]++;
-        } //fin if
-      }//fin for
-    }//fin if
-  } //fin while
-} //fin if
+	$sql = 'SELECT Nom, g_choix_1, g_choix_2, g_choix_3, g_choix_4, g_choix_5, voeux_g, voeux_t, voeux_a FROM voeux_eleves WHERE classe IN '.$liste_classes;
+	$result = $conn->query($sql);
+	if ($result->num_rows > 0) {
+	  while($eleve = $result->fetch_assoc()) {
+	    if ($eleve['voeux_g'] == 1){
+	      for ($i=1;$i<=4;$i++){
+	        $nbr_choix[$conversion_depuis_db[$eleve['g_choix_'.$i]]][$i-1]++;
+	        if ((($eleve['voeux_t']+$eleve['voeux_a']) == 0) and $eleve['g_choix_5'] == '') {
+	          $nbr_choix_min[$conversion_depuis_db[$eleve['g_choix_'.$i]]][$i-1]++;
+	        } //fin if
+	      }//fin for
+	    }//fin if
+	  } //fin while
+	} //fin if
 
-foreach ($conversion_vers_db as $decrypt => $crypt){
-  if (in_array($decrypt,array('Ing', 'Num', 'Latin','Arts'))){ //on compte les vœux en général hors lycée
-    $sql = 'SELECT COUNT(g_choix_5) AS '.$decrypt.' FROM voeux_eleves WHERE g_choix_5="'.$crypt.'"';
-    $req = $conn->query($sql);
-    $result = $req->fetch_assoc();
-    $nbr_choix[$decrypt][0] = $result[$decrypt];
-  }//fin elseif
-  elseif (in_array($decrypt,array('STMG', 'ST2S', 'STL', 'STI2D', 'STD2A'))){
-    for ($i=1;$i<=2;$i++){ // on compte les vœux en technologie
-      $sql = 'SELECT COUNT(t_choix_'.$i.') AS '.$decrypt.' FROM voeux_eleves WHERE t_choix_'.$i.'="'.$crypt.'"';
-      $req = $conn->query($sql);
-      $result = $req->fetch_assoc();
-      $nbr_choix[$decrypt][$i-1] = $result[$decrypt];
-    }//fin for
-  }//fin elseif
-  elseif (in_array($decrypt,array('Pro', 'Autre'))) {
-    // on compte les vœux en pro et autre
-    $sql = 'SELECT COUNT(a_choix_1) AS '.$decrypt.' FROM voeux_eleves WHERE a_choix_1="'.$crypt.'"';
-    $req = $conn->query($sql);
-    $result = $req->fetch_assoc();
-    $nbr_choix[$decrypt][0] = $result[$decrypt];
-  }//fin else
-} //fin foreach
+	foreach ($conversion_vers_db as $decrypt => $crypt){
+	  if (in_array($decrypt,array('Ing', 'Num', 'Latin','Arts'))){ //on compte les vœux en général hors lycée
+	    $sql = 'SELECT COUNT(g_choix_5) AS '.$decrypt.' FROM voeux_eleves WHERE g_choix_5="'.$crypt.'"';
+	    $req = $conn->query($sql);
+	    $result = $req->fetch_assoc();
+	    $nbr_choix[$decrypt][0] = $result[$decrypt];
+	  }//fin elseif
+	  elseif (in_array($decrypt,array('STMG', 'ST2S', 'STL', 'STI2D', 'STD2A'))){
+	    for ($i=1;$i<=2;$i++){ // on compte les vœux en technologie
+	      $sql = 'SELECT COUNT(t_choix_'.$i.') AS '.$decrypt.' FROM voeux_eleves WHERE t_choix_'.$i.'="'.$crypt.'"';
+	      $req = $conn->query($sql);
+	      $result = $req->fetch_assoc();
+	      $nbr_choix[$decrypt][$i-1] = $result[$decrypt];
+	    }//fin for
+	  }//fin elseif
+	  elseif (in_array($decrypt,array('Pro', 'Autre'))) {
+	    // on compte les vœux en pro et autre
+	    $sql = 'SELECT COUNT(a_choix_1) AS '.$decrypt.' FROM voeux_eleves WHERE a_choix_1="'.$crypt.'"';
+	    $req = $conn->query($sql);
+	    $result = $req->fetch_assoc();
+	    $nbr_choix[$decrypt][0] = $result[$decrypt];
+	  }//fin else
+	} //fin foreach
 
 
 
-// Création du nombre de groupes
-$nbr_grp = array('HGGSP'=>0, 'HLP'=>0, 'LLCE'=>0, 'Maths'=>0, 'SPC'=>0, 'SES'=>0, 'SVT'=>0, 'STMG'=>0);
-foreach (array('HGGSP', 'HLP', 'LLCE', 'Maths', 'SPC', 'SES', 'SVT', 'STMG') as $spe){
-  if ($spe == 'STMG'){
-    if ($nbr_choix[$spe][0]%24==0){$nbr_grp[$spe] = (int)($nbr_choix[$spe][0]/24);}
-    else{$nbr_grp[$spe] = (int)($nbr_choix[$spe][0]/24) + 1;}
-  } //fin if
-  else{
-    $nbr_eleves = array_sum(array_slice($nbr_choix[$spe],0,3));
-    if ($nbr_eleves%35==0){$nbr_grp[$spe] = (int)($nbr_eleves/35);}
-    else{$nbr_grp[$spe] = (int)($nbr_eleves/35) + 1;}
-  } //fin else
-} //fin foreach
+	// Création du nombre de groupes
+	$nbr_grp = array('HGGSP'=>0, 'HLP'=>0, 'LLCE'=>0, 'Maths'=>0, 'SPC'=>0, 'SES'=>0, 'SVT'=>0, 'STMG'=>0);
+	foreach (array('HGGSP', 'HLP', 'LLCE', 'Maths', 'SPC', 'SES', 'SVT', 'STMG') as $spe){
+	  if ($spe == 'STMG'){
+	    if ($nbr_choix[$spe][0]%24==0){$nbr_grp[$spe] = (int)($nbr_choix[$spe][0]/24);}
+	    else{$nbr_grp[$spe] = (int)($nbr_choix[$spe][0]/24) + 1;}
+	  } //fin if
+	  else{
+	    $nbr_eleves = array_sum(array_slice($nbr_choix[$spe],0,3));
+	    if ($nbr_eleves%35==0){$nbr_grp[$spe] = (int)($nbr_eleves/35);}
+	    else{$nbr_grp[$spe] = (int)($nbr_eleves/35) + 1;}
+	  } //fin else
+	} //fin foreach
 
-// Création du nombre de groupes minimum
-$nbr_grp_min = array('HGGSP'=>0, 'HLP'=>0, 'LLCE'=>0, 'Maths'=>0, 'SPC'=>0, 'SES'=>0, 'SVT'=>0);
-foreach (array('HGGSP', 'HLP', 'LLCE', 'Maths', 'SPC', 'SES', 'SVT') as $spe){
-    $nbr_eleves = array_sum(array_slice($nbr_choix_min[$spe],0,3));
-    if ($nbr_eleves%35==0){$nbr_grp_min[$spe] = (int)($nbr_eleves/35);}
-    else{$nbr_grp_min[$spe] = (int)($nbr_eleves/35) + 1;}
-} //fin foreach
+	// Création du nombre de groupes minimum
+	$nbr_grp_min = array('HGGSP'=>0, 'HLP'=>0, 'LLCE'=>0, 'Maths'=>0, 'SPC'=>0, 'SES'=>0, 'SVT'=>0);
+	foreach (array('HGGSP', 'HLP', 'LLCE', 'Maths', 'SPC', 'SES', 'SVT') as $spe){
+	    $nbr_eleves = array_sum(array_slice($nbr_choix_min[$spe],0,3));
+	    if ($nbr_eleves%35==0){$nbr_grp_min[$spe] = (int)($nbr_eleves/35);}
+	    else{$nbr_grp_min[$spe] = (int)($nbr_eleves/35) + 1;}
+	} //fin foreach
 
 
 
@@ -250,7 +218,7 @@ echo '
   </tr>
 </table>
 <p class=bilan><sup>*</sup>Entre parenthèses est écrit le nombre minimum d\'élèves présents dans la spécialité, et le cas échéant le nombre de groupe.
-<br/>On a enlevé les élèves ayant fait des vœux de spécialité dans un aitre lycée, ainsi que les élèves ayant fait des vœux en Générale et Technologique.</p>
+<br/>On a enlevé les élèves ayant fait des vœux de spécialité dans un autre lycée, ainsi que les élèves ayant fait des vœux en Générale et Technologique.</p>
 <table class="bilan">
   <caption class="techno">Voie Technologique</caption>
   <tr>
@@ -305,11 +273,14 @@ echo '
     <td class="bilan">'.$nbr_choix['Autre'][0].'</td>
   </tr>
 </table>
+<footer class="noimprim"><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+</footer>
 </body>
 </html>';
+$conn->close();
 }
 
 
 else
-{Header('Location:../index.html');}
+{Header('Location:../index.php');}
 ?>

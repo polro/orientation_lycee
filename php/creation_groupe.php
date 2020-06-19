@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (in_array($_SESSION['login'],array('admin','direction'))){
+if (in_array($_SESSION['acces'],array('1','2'))){
 
   include 'decrypt_db.php';
   include 'menu.php';
@@ -26,9 +26,9 @@ if (in_array($_SESSION['login'],array('admin','direction'))){
     </tr>
     <tr>
       <th class="bilan">Avec</th>
-      <td class="bilan"><input type="checkbox" name="grp_prem[]" value="Hist"></td>
-      <td class="bilan"><input type="checkbox" name="grp_prem[]" value="Litt"></td>
-      <td class="bilan"><input type="checkbox" name="grp_prem[]" value="Langues"></td>
+      <td class="bilan"><input type="checkbox" name="grp_prem[]" value="HGGSP"></td>
+      <td class="bilan"><input type="checkbox" name="grp_prem[]" value="HLP"></td>
+      <td class="bilan"><input type="checkbox" name="grp_prem[]" value="LLCE"></td>
       <td class="bilan"><input type="checkbox" name="grp_prem[]" value="Maths"></td>
       <td class="bilan"><input type="checkbox" name="grp_prem[]" value="SPC"></td>
       <td class="bilan"><input type="checkbox" name="grp_prem[]" value="SVT"></td>
@@ -37,9 +37,9 @@ if (in_array($_SESSION['login'],array('admin','direction'))){
     </tr>
     <tr>
       <th class="bilan">Sans</th>
-      <td class="bilan"><input type="checkbox" name="sans_prem[]" value="Hist"></td>
-      <td class="bilan"><input type="checkbox" name="sans_prem[]" value="Litt"></td>
-      <td class="bilan"><input type="checkbox" name="sans_prem[]" value="Langues"></td>
+      <td class="bilan"><input type="checkbox" name="sans_prem[]" value="HGGSP"></td>
+      <td class="bilan"><input type="checkbox" name="sans_prem[]" value="HLP"></td>
+      <td class="bilan"><input type="checkbox" name="sans_prem[]" value="LLCE"></td>
       <td class="bilan"><input type="checkbox" name="sans_prem[]" value="Maths"></td>
       <td class="bilan"><input type="checkbox" name="sans_prem[]" value="SPC"></td>
       <td class="bilan"><input type="checkbox" name="sans_prem[]" value="SVT"></td>
@@ -71,9 +71,9 @@ if (in_array($_SESSION['login'],array('admin','direction'))){
     </tr>
     <tr>
       <th class="bilan">Avec</th>
-      <td class="bilan"><input type="checkbox" name="grp_term[]" value="Hist"></td>
-      <td class="bilan"><input type="checkbox" name="grp_term[]" value="Litt"></td>
-      <td class="bilan"><input type="checkbox" name="grp_term[]" value="Langues"></td>
+      <td class="bilan"><input type="checkbox" name="grp_term[]" value="HGGSP"></td>
+      <td class="bilan"><input type="checkbox" name="grp_term[]" value="HLP"></td>
+      <td class="bilan"><input type="checkbox" name="grp_term[]" value="LLCE"></td>
       <td class="bilan"><input type="checkbox" name="grp_term[]" value="Maths"></td>
       <td class="bilan"><input type="checkbox" name="grp_term[]" value="SPC"></td>
       <td class="bilan"><input type="checkbox" name="grp_term[]" value="SVT"></td>
@@ -81,9 +81,9 @@ if (in_array($_SESSION['login'],array('admin','direction'))){
     </tr>
     <tr>
       <th class="bilan">Sans</th>
-      <td class="bilan"><input type="checkbox" name="sans_term[]" value="Hist"></td>
-      <td class="bilan"><input type="checkbox" name="sans_term[]" value="Litt"></td>
-      <td class="bilan"><input type="checkbox" name="sans_term[]" value="Langues"></td>
+      <td class="bilan"><input type="checkbox" name="sans_term[]" value="HGGSP"></td>
+      <td class="bilan"><input type="checkbox" name="sans_term[]" value="HLP"></td>
+      <td class="bilan"><input type="checkbox" name="sans_term[]" value="LLCE"></td>
       <td class="bilan"><input type="checkbox" name="sans_term[]" value="Maths"></td>
       <td class="bilan"><input type="checkbox" name="sans_term[]" value="SPC"></td>
       <td class="bilan"><input type="checkbox" name="sans_term[]" value="SVT"></td>
@@ -134,9 +134,10 @@ if (in_array($_SESSION['login'],array('admin','direction'))){
 </div>
 
 ';
-
-  if (isset($_POST['validate_prem'])){ //Affichage tableau première
-    $sql = 'SELECT Nom, Classe, g_choix_1, g_choix_2, g_choix_3, t_choix_1 FROM voeux_eleves WHERE Classe IN ("2A","2B","2C","2D","2E","2F","2G","2H") ORDER BY Nom';
+/*Affichage tableau pour les futures premières */
+  if (isset($_POST['validate_prem'])){ 
+  	$liste_classes = '("'.join('","',$_SESSION['liste_classes_seconde']).'")';
+    $sql = 'SELECT Nom, Classe, g_choix_1, g_choix_2, g_choix_3, t_choix_1 FROM voeux_eleves WHERE Classe IN '.$liste_classes.' ORDER BY Nom';
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
       echo '
@@ -217,7 +218,8 @@ echo '
 
 
   if (isset($_POST['validate_term'])){ //Affichage tableau terminale
-    $sql = 'SELECT Nom, Classe, term_choix_1, term_choix_2, term_choix_3, term_choix_4, term_choix_5, term_choix_6 FROM voeux_eleves WHERE Classe IN ("1A","1B","1C","1D","1E") ORDER BY Nom';
+  	$liste_classes = '("'.join('","',$_SESSION['liste_classes_premiere']).'")';
+    $sql = 'SELECT Nom, Classe, term_choix_1, term_choix_2, term_choix_3, term_choix_4, term_choix_5, term_choix_6 FROM voeux_eleves WHERE Classe IN '.$liste_classes.' ORDER BY Nom';
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
       echo '
@@ -308,15 +310,20 @@ echo '
 
   } //fin if post[validate_term]
 
-  	echo '  </body>
+  	echo '  
+  	<footer class="noimprim"><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+</footer>
+</body>
 </html>';
     $conn->close();
 }
 elseif (isset($_SESSION['nom'])){
   include 'menu.php';
-  echo '<h1>Vous n\'avez pas accès à cette page. Vous venez de briser notre CONFIANCE.</h1>  
+  echo '<h1>Vous n\'avez pas accès à cette page '.$_SESSION['nom'].'. Vous venez de briser notre CONFIANCE.</h1>  
+  <footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+</footer>
   </body>
 </html>';}
 
-else{Header('Location:../index.html');}
+else{Header('Location:../index.php');}
 ?>
