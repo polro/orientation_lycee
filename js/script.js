@@ -16,6 +16,6 @@ function masquer_afficher() {
   }
   else {
     document.getElementById("recap").style.display = "block";
-    document.getElementById("bouton").innerHTML = '<input type="button" value="Marquer récap" onClick="masquer_afficher()">';
+    document.getElementById("bouton").innerHTML = '<input type="button" value="Masquer récap" onClick="masquer_afficher()">';
   }
 }
