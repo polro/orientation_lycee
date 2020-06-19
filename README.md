@@ -1,4 +1,4 @@
-# orientation_lycee
+# Site pour compter le nombres d'élèves dans les spécialités du lycée
 PHP web site to resume students' choices for highschool in France
 
 
