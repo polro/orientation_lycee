@@ -20,10 +20,10 @@ if (isset($_SESSION['nom'])){
     // On regarde les vœux manquant et multiple
 	$voeux_manquant = array_pad(array(), count($_SESSION['liste_classes_premiere']), 0);
 	foreach ($_SESSION['liste_classes_premiere'] as $classe) {
-		$sql_voeux = 'SELECT term_choix_1, term_choix_2 FROM voeux_eleves WHERE Classe="'.$classe.'";';
+		$sql_voeux = 'SELECT term_choix_1, term_choix_2, term_choix_6 FROM voeux_eleves WHERE Classe="'.$classe.'";';
   		$req_voeux = $conn->query($sql_voeux);
   		while($eleve = $req_voeux->fetch_assoc()) {
-  			if (($eleve['term_choix_1'] == '') | ($eleve['term_choix_2'] == '')) {
+  			if ((($eleve['term_choix_1'] == '') | ($eleve['term_choix_2'] == '')) and ($eleve['term_choix_6'] == '')) {
   				$voeux_manquant[array_search($classe, $_SESSION['liste_classes_premiere'])]++;
   			}
   		}

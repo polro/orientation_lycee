@@ -380,7 +380,7 @@ if (isset($_SESSION['nom'])){
             $choix_selected['choix_6'][0] = 'selected';
           }
 
-          if (($row['term_choix_1'] == '') | ($row['term_choix_2'] == '')) {
+          if ((($row['term_choix_1'] == '') | ($row['term_choix_2'] == '')) and ($row['term_choix_6'] == '')) {
           	$voeux_manquant = 'style="color: red;border-color: black;"';
           } else {$voeux_manquant = '';}
           
