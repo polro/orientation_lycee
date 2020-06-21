@@ -1,7 +1,5 @@
 <?php
-
-//include 'php/connect.php';
-$lycee='Marx Dormoy';
+include 'php/connect.php';
 ?>
 
 <!DOCTYPE html>

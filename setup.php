@@ -5,39 +5,70 @@ include 'php/connect.php';
 echo '<!DOCTYPE html>
 <html lang="fr" >
   <head>
-    <title>Lycée Marx Dormoy</title>
+    <title>Lycée '.$lycee.'</title>
     <meta name="author" content="Romuald Pol" />
-    <link href="../styles/style.css" rel="stylesheet" type="text/css" media="screen" />
-    <link href="../styles/impression.css" rel="stylesheet" type="text/css" media="print" />
+    <link href="styles/style.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="styles/impression.css" rel="stylesheet" type="text/css" media="print" />
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
   </head>
-  <body>';
+  <body>
+  <div class="content">
+    <div style="display:flex;justify-content: space-around;">
+      <img src="images/logo.png" alt="logo" width="120" height="120"/>
+      <h1>Site de saisi des vœux d\'orientation<br/>du lycée '.$lycee.'</h1>
+    </div>
+    <ul class="menu">
+      <li class="menu"><a href="php/bilan-seconde.php" class="menu">Bilan de 2<sup>nd</sup></a></li>
+      <li class="menu"><a href="php/bilan-premiere.php" class="menu">Bilan de 1<sup>ère</sup></a></li>
+    </ul>';
 
 if (!isset($_POST['valider'])) {
 
 	$sql = 'SELECT Nom, login, password, mail FROM voeux_pp WHERE Classe="AD"';
 	if ($req = $conn->query($sql)) {
 		$admin = mysqli_fetch_assoc($req);
-		echo '<h2>Le site est déjà paramétré.</h2> 
-		<p>Si vous avez oublié le mot de passe administrateur et que vous voulez recevoir vos identifiants sur l\'adresse email du compte admin</p> <form method="post"><input type="submit" name="connexion" value="cliquez ici"></form>' ;
+	
+		function get_ip() {
+		    if ( isset ( $_SERVER['HTTP_X_FORWARDED_FOR'] ) )
+		    {
+		        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		    }
+		    elseif ( isset ( $_SERVER['HTTP_CLIENT_IP'] ) )
+		    {
+		        $ip  = $_SERVER['HTTP_CLIENT_IP'];
+		    }
+		    else
+		    {
+		        $ip = $_SERVER['REMOTE_ADDR'];
+		    }
+		    return $ip;
+		}
+
+		echo '<h2>Le site est déjà paramétré, et un compte admin existe.</h2> 
+		<p>Si vous avez oublié le mot de passe administrateur et que vous voulez recevoir vos identifiants sur l\'adresse email du compte admin</p> <form method="post"><input type="submit" name="connexion" value="cliquez ici"></form>
+		<p>Pour plus de sécurité, et éviter les demandes inappropriées, votre adresse IP ('.get_ip().') sera envoyée avec le mail.</p>' ;
 
 		/* Envoi du mail de connexion admin */
 		if (isset($_POST['connexion'])) {
 			$to = $admin['mail'];
 		    $subject = "Vos identifiants pour le site de saisi des voeux";
 		    $message = '
-	Bonjour '.$admin['Nom'].' !
+	<h1>Bonjour '.$admin['Nom'].' !</h1>
 
-	Voici vos identifiants pour administrer le site de saisi des vœux.
-	login : '.$admin['login'].'
-	mot de passe : '.$admin['password'].'
-	lien de connexion : https://www.lycee-marxdormoy-creteil.fr/voeux
+	<p>Une demande pour récupérer les identifiants du compte administreur le site de saisi des vœux a été faite par l\'IP : '.get_ip().'.
+	<br/>login : '.$admin['login'].'
+	<br/>mot de passe : '.$admin['password'].'
+	<br/>lien de connexion : https://www.lycee-marxdormoy-creteil.fr/voeux</p>
 
-	Utilisez ces identifiants judicieusement, rappelez-vous des sages paroles d\'Oncle Ben :
-	« Un grand pouvoir implique de grandes responsabilités. »
+	<p>Utilisez ces identifiants judicieusement, rappelez-vous des sages paroles d\'Oncle Ben :
+	<br/>« <em>Un grand pouvoir implique de grandes responsabilités.</em> »</p>
 
 	'.$admin['Nom'];
-		    $headers = "From:" . $admin['mail'];
+		    
+			$headers = 'From: '.$admin['Nom'].' <'.$admin['mail'].'>'."\r\n";
+	    	$headers .= 'Content-type: text/html; charset=utf-8'."\r\n";
+			$headers .= "\r\n";
+
 		    if (mail($to,$subject,$message, $headers)) {
 		    	echo '<h3>L\'email a bien été envoyé.</h3>';
 		    } else {
@@ -168,11 +199,17 @@ if (!isset($_POST['valider'])) {
 			echo '</ul>';
 		echo 'Il y a eu un problème dans la création du compte administrateur. Tout est réinitialisé. <a href="setup.php">Recommencer</a>';
 		$sql2 = 'DROP TABLE voeux_pp';
+		$conn->query($sql2);
+		$sql2 = 'DROP TABLE voeux_eleves';
 		$conn->query($sql2); 
 	}
 }
 
-echo '</body></html>';
+echo '
+	</div>
+    <footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+	</footer>
+</body></html>';
 $conn->close();
 
 ?>
