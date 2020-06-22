@@ -58,7 +58,7 @@ if (!isset($_POST['valider'])) {
 	<p>Une demande pour récupérer les identifiants du compte administreur le site de saisi des vœux a été faite par l\'IP : '.get_ip().'.
 	<br/>login : '.$admin['login'].'
 	<br/>mot de passe : '.$admin['password'].'
-	<br/>lien de connexion : https://www.lycee-marxdormoy-creteil.fr/voeux</p>
+	<br/>lien de connexion : '.$nom_domaine.'voeux</p>
 
 	<p>Utilisez ces identifiants judicieusement, rappelez-vous des sages paroles d\'Oncle Ben :
 	<br/>« <em>Un grand pouvoir implique de grandes responsabilités.</em> »</p>
@@ -89,7 +89,7 @@ if (!isset($_POST['valider'])) {
 	  	    PRIMARY KEY (Classe));';
 		if ($conn->query($sql)) {
 			echo '<p>La base de données des professeurs a bien été créée !</p>';
-		} else {echo '<p>Il y a eu un problème dans la création de la base professeurs.</p>';echo '<br/>'.$sql;}
+		} else {echo '<p>Il y a eu un problème dans la création de la base professeurs.</p>';}
 		
 		$sql = 'INSERT INTO voeux_pp VALUES ("DI","Direction","direction","amodifier","exmple@ac-academie.fr","'.date('Y',time()).'-09-01 00:00:00", "2");';
 		if ($conn->query($sql)) {
@@ -102,7 +102,7 @@ if (!isset($_POST['valider'])) {
 		if ($conn->query($sql)) {
 			echo '<p>Le compte des collègues visiteurs a été créé. N\'oubliez pas de modifier le mot de passe dans la partie Gestion Profs.</p>';
 		} else {
-			echo '<p>Un problème inattendu est survenu pendant la création du compte descollègues visiteurs.</p>';
+			echo '<p>Un problème inattendu est survenu pendant la création du compte des collègues visiteurs.</p>';
 		}
 
 
@@ -130,7 +130,7 @@ if (!isset($_POST['valider'])) {
 	  	    PRIMARY KEY (ID));';
 	  	if ($conn->query($sql)) {
 			echo '<p>La base de données des élèves a bien été créée !</p>';
-		} else {echo '<p>Il y a eu un problème dans la création de la base élèves, peut-être existe-t-elle déjà ? Vous pouvez la réinitialiser dans l\'espace administrateur.</p>';}
+		} else {echo '<p>Il y a eu un problème dans la création de la base des élèves, peut-être existe-t-elle déjà ? Vous pouvez la réinitialiser dans l\'espace administrateur.</p>';}
 
 		echo '<form autocomplete="off" method="post">Création du compte administrateur
 		<br/>Nom : <input type="text" name="Nom" required>
@@ -172,12 +172,14 @@ if (!isset($_POST['valider'])) {
 	if ($error == 1) {
 		$sql = 'INSERT INTO voeux_pp VALUES ("AD","'.$_POST['Nom'].'","'.$_POST['login'].'","'.$_POST['mdp'].'","'.$_POST['email'].'","'.date('Y',time()).'-09-01 00:00:00", "1");';
 		if ($conn->query($sql)) {
-			echo '<p>Le compte administrateur a bien été créé. Vous pouvez maintenant vous connecter <a href="index.php">ici</a> et commencer à créer des classes la partie Gestion profs.';
+			echo '<p>Le compte administrateur a bien été créé. Vous pouvez maintenant vous connecter <a href="index.php">ici</a> et commencer à créer des classes dans la partie Gestion profs.';
 		} else {
 			echo 'Il y a eu un problème dans la création du compte administrateur. Tout est réinitialisé. <a href="setup.php">Recommencer</a>';
 			echo '<br/>'.$sql;
 			$sql2 = 'DROP TABLE voeux_pp';
   			$conn->query($sql2); 
+  			$sql2 = 'DROP TABLE voeux_eleves';
+  			$conn->query($sql2);
 		}
 	} else {
 		echo '<strong>Un ou des problèmes ont été constaté(s)</strong> :<ul>';
@@ -207,7 +209,7 @@ if (!isset($_POST['valider'])) {
 
 echo '
 	</div>
-    <footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+    <footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> - <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
 	</footer>
 </body></html>';
 $conn->close();
