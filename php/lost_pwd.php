@@ -1,6 +1,5 @@
 <?php 
 
-include 'connect.php';
 function test_input($data) {
 	$data = trim($data);
 	$data = stripslashes($data);
@@ -9,6 +8,7 @@ function test_input($data) {
 }
 
 if (isset($_POST['valider'])) {
+	include 'connect.php';
 	$email = test_input($_POST['email']);
 	$nom = test_input($_POST['Nom']);
 	if ((filter_var($email, FILTER_VALIDATE_EMAIL)) and (preg_match("/^[a-zA-ZéÉèÈëËàÀïÏîÎöÖôÔ\- ]*$/",$nom))) {
@@ -22,22 +22,20 @@ if (isset($_POST['valider'])) {
 
 		$to = $admin['mail'];
 	    $subject = "Identifiants pour le site de saisi des voeux";
-	    $message = ' Un accès au compte visiteur du site de saisi de vœux vient d\'être demandé par '.$nom.' avec comme adresse email '.$email.'. Vous avez un modèle de mail disponible ci-dessous pour lui envoyer les identifiants.
+	    $message = '<p>Un accès au compte visiteur du site de saisi de vœux vient d\'être demandé par '.$nom.' avec comme adresse email '.$email.'. Vous avez un modèle de mail disponible ci-dessous pour lui envoyer les identifiants.</p>
+_________________________________________________________________
+<h1 style="font-size: 1.2em">Bonjour '.$nom.',</h1>
+<p>Voici les identifiants pour visualiser le bilan des choix des élèves du lycée.</p>
+<p>login : '.$visiteur['login'].'
+<br/>mot de passe : '.$visiteur['password'].'
+<br/>lien de connexion : https://www.lycee-marxdormoy-creteil.fr/voeux </p>
+<p>Bien cordialement,</p>
+<p>'.$admin['Nom'].'</p>';
 
-	    _________________________________________________________________ 
+	    $headers = 'From: '.$admin['Nom'].' <'.$admin['mail'].'>'."\r\n";
+	    $headers .= 'Content-type: text/html; charset=utf-8'."\r\n";
+		$headers .= "\r\n";
 
-Bonjour '.$nom.',
-
-Voici les identifiants pour visualiser le bilan des choix des élèves du lycée.
-login : '.$visiteur['login'].'
-mot de passe : '.$visiteur['password'].'
-lien de connexion : https://www.lycee-marxdormoy-creteil.fr/voeux
-
-Bien cordialement,
-
-'.$admin['Nom'];
-	    $headers = "From: " . $admin['mail'].'\n';
-	    $headers .='Content-Type: text/plain; charset="utf-8"'." ";
 	    if (mail($to,$subject,$message, $headers)) {
 	    	Header('Location:../index.php?mail=ok');
 	    } else {
@@ -51,25 +49,7 @@ Bien cordialement,
 }
 
 
-echo '<!DOCTYPE html>
-<html lang="fr" >
-  <head>
-    <title>Lycée Marx Dormoy</title>
-    <meta name="author" content="Romuald Pol" />
-    <link href="../styles/style.css" rel="stylesheet" type="text/css" />
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link rel="icon" href="images/favicon.ico" />
-  </head>
-  <body>
-
-    <div style="display:flex;justify-content: space-around;">
-      <img src="../images/logo.png" alt="logo" width="120" height="120"/>
-      <h1>Site de saisi des vœux d\'orientation<br/>du lycée Marx Dormoy</h1>
-    </div>
-    <ul class="menu">
-      <li class="menu"><a href="bilan-seconde.php" class="menu">Bilan de 2<sup>nd</sup></a></li>
-      <li class="menu"><a href="bilan-premiere.php" class="menu">Bilan de 1<sup>ère</sup></a></li>
-    </ul>';
+include 'menu.php';
 	    
 if ($_GET['option'] == 'pp') {
     if (!isset($_POST['valider'])) {
@@ -109,20 +89,20 @@ if ($_GET['option'] == 'pp') {
 			    error_reporting( E_ALL );
 			    $to = $prof['mail'];
 			    $subject = "Vos identifiants pour le site de saisi des voeux";
-			    $message = '
-Bonjour '.$prof['Nom'].' !
+			    
+			    $message = '<h1 style="font-size: 1.5em;">Bonjour '.$prof['Nom'].' !</h1>'."\r\n\r\n";
+				$message .= '<p>Voici vos identifiants pour modifier les choix de vos élèves de la classe '.$prof['Classe'].'.'."\r\n";
+				$message .= '<br/>login : '.$prof['login']."\r\n";
+				$message .= '<br/>mot de passe : '.$prof['password']."\r\n";
+				$message .= '<br/>lien de connexion : https://www.lycee-marxdormoy-creteil.fr/voeux </p>'."\r\n\r\n";
+				$message .= '<p>Utilisez ces identifiants avec précaution, rappelez-vous des sages paroles d\'Oncle Ben :'."\r\n";
+				$message .= '<br/>« <em>Un grand pouvoir implique de grandes responsabilités.</em> »</p>'."\r\n";
+				$message .= $admin['Nom']."\r\n";
 
-Voici vos identifiants pour modifier les choix de vos élèves de la classe '.$prof['Classe'].'.
-login : '.$prof['login'].'
-mot de passe : '.$prof['password'].'
-lien de connexion : https://www.lycee-marxdormoy-creteil.fr/voeux
+			    $headers = 'From: '.$admin['Nom'].' <'.$admin['mail'].'>'."\r\n";
+		    	$headers .= 'Content-type: text/html; charset=utf-8'."\r\n";
+				$headers .= "\r\n";
 
-Utilisez ces identifiants judicieusement, rappelez-vous des sages paroles d\'Oncle Ben :
-« Un grand pouvoir implique de grandes responsabilités. »
-
-'.$admin['Nom'];
-			    $headers = "From:" . $admin['mail'].'\n';
-	    		$headers .='Content-Type: text/plain; charset="utf-8"'." ";
 			    if (mail($to,$subject,$message, $headers)) {
 			    	echo '<h3>Un email contenant vos indentifiants a bien été envoyé sur l\'adresse email renseignée.</h3>
 			    	<p><a href="../index.html">Cliquez ici</a> pour vous connecter.';
@@ -149,7 +129,7 @@ Utilisez ces identifiants judicieusement, rappelez-vous des sages paroles d\'Onc
 	<br/>
 	<input type="submit" name="valider" value="Envoyer">
 	</form>
-	<footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+	<footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="../images/cc.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
 </footer>
 </body>
 </html>';

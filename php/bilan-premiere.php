@@ -4,10 +4,7 @@ session_start();
 
 if (isset($_SESSION['nom'])){
 
-  	include 'connect.php';
   	include 'decrypt_db.php';
-
-  	// On affiche l'entête de la page 
   	include 'menu.php';
 
   	$liste_classes = '("'.join('","',$_SESSION['liste_classes_premiere']).'");';
@@ -206,7 +203,7 @@ if (isset($_SESSION['nom'])){
     <td class="bilan">'.$nbr_choix['STMG'].'</td>
   </tr>
 </table>
-<footer class="noimprim"><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+<footer class="noimprim"><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="../images/cc.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
 </footer>
 </body>
 </html>';

@@ -5,7 +5,6 @@ if (in_array($_SESSION['acces'],array('1','2'))){
 
   include 'decrypt_db.php';
   include 'menu.php';
-  include 'connect.php';
 
   echo '<h2>Création de groupe</h2>
 <div class="noimprim">
@@ -320,7 +319,7 @@ echo '
 elseif (isset($_SESSION['nom'])){
   include 'menu.php';
   echo '<h1>Vous n\'avez pas accès à cette page '.$_SESSION['nom'].'. Vous venez de briser notre CONFIANCE.</h1>  
-  <footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+  <footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="../images/cc.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
 </footer>
   </body>
 </html>';}

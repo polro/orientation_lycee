@@ -2,11 +2,13 @@
 // Démarrage de la session
 session_start();
 
-if (isset($_SESSION['nom'])){  
+include 'connect.php';
+
+ 
 	echo '<!DOCTYPE html>
 <html lang="fr" >
   <head>
-    <title>Lycée Marx Dormoy</title>
+    <title>Lycée '.$lycee.'</title>
     <meta name="author" content="Romuald Pol" />
     <link href="../styles/style.css" rel="stylesheet" type="text/css" media="screen" />
     <link href="../styles/impression.css" rel="stylesheet" type="text/css" media="print" />
@@ -18,7 +20,7 @@ if (isset($_SESSION['nom'])){
     <div class="content">
     <div style="display:flex;justify-content: space-around;">
       <img src="../images/logo.png" alt="logo" width="120" height="120"/>
-      <h1>Site de saisi des vœux d\'orientation<br/>du lycée Marx Dormoy</h1>
+      <h1>Site de saisi des vœux d\'orientation<br/>du lycée '.$lycee.'</h1>
     </div>
     <div class="noimprim">
     <ul class="menu">';
@@ -63,10 +65,15 @@ if (isset($_SESSION['nom'])){
     else {echo '
       <li class="menu"><a href="creation_groupe.php" class="menu">Création des groupes</a></li>';}
   }
-
-  echo '
+  if (isset($_SESSION['nom'])) {
+  	echo '
       <li class="menu"  style="float:right"><a href="Disconnect.php" class="menu">Déconnexion</a></li>
     </ul>';
+  } else {
+  	echo '
+      <li class="menu"  style="float:right"><a href="../index.php" class="menu">Connexion</a></li>
+    </ul>';
+  }
 
   if ($_SESSION['acces'] == '1') {
     echo '
@@ -77,15 +84,11 @@ if (isset($_SESSION['nom'])){
   } elseif ($_SESSION['acces'] == '4'){
   	echo '
     <p class="menu"> Bonjour collègue, <br/>Bienvenue sur ce bilan des choix des élèves.</p>';
-  } else{
+  } elseif (isset($_SESSION['nom'])) {
     echo '
     <p class="menu">Bonjour '. $_SESSION['nom'] .', vous êtes l\'enseignant.e en charge de la classe de '.$_SESSION['classe'].'.</p>';
   }
 
   echo '</div>';
 
-
-}
-else
-{Header('Location:../index.php');}
 ?>

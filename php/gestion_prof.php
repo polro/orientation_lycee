@@ -12,7 +12,6 @@ function test_input($data) {
 
 //On affiche tous les comptes
 if ($_SESSION['acces'] == '1'){
-  include 'connect.php';
   include 'menu.php';
 
   /*if (($_GET['option'] <> 'modifier') & ($_GET['option'] <> 'ajouter') & !isset($_POST['valider_modif'])) {*/
@@ -22,64 +21,71 @@ $liste_classes = '("'.join('","',$_SESSION['liste_classes_seconde']).'","'.join(
 /* On affiche la liste des comptes spéciaux */
   $sql = 'SELECT Classe, Nom FROM voeux_pp WHERE Classe NOT IN '.$liste_classes.' ORDER BY Classe ASC';
   $req = $conn->query($sql);
-  echo '<style>td{text-align: center;height: 30px;vertical-align: center;}</style>
-  <div style="display: flex; justify-content: space-around;">
-  <div><table style="margin-bottom: 30px;">
-  <caption>Comptes spéciaux</caption>
-  <tr>
-    <th style="width: 250px;">Nom du compte</th>
-    <th style="width: 90px;">Envoyer mail</th>
-    <th style="width: 90px;">Modifier</th>
-  </tr>';
+  echo '
+  <style>td{text-align: center;height: 30px;vertical-align: center;}</style>
+	<div style="display: flex; justify-content: space-around;">
+  		<div>
+    		<table style="margin-bottom: 30px;">
+    			<caption>Comptes spéciaux</caption>
+			    <tr>
+			      <th style="width: 250px;">Nom du compte</th>
+			      <th style="width: 90px;">Envoyer mail</th>
+			      <th style="width: 90px;">Modifier</th>
+			    </tr>';
     if ($req->num_rows > 0) {
         while($row = $req->fetch_assoc()) {
           	echo '
-  <tr>
-    <td>'.$row['Nom'].'</td>
-    <td>';
+			    <tr>
+			      <td>'.$row['Nom'].'</td>
+			      <td>';
     		if ($row['Classe'] <> 'AD') {
     			echo '<a href="gestion_prof.php?option=mail&classe='.$row['Classe'].'"><img src="../images/mail.png" alt="" title="Envoyer les identifiants par mail à '.$row['Nom'].'" width=25px height=25px></a>';}
     		echo '</td>
-    <td><a href="gestion_prof.php?option=modifier&classe='.$row['Classe'].'"><img src="../images/modifier.jpeg" alt="" title="Modifier le compte '.(strpbrk("aàäeéèêëiïîoöôuù",strtolower(substr($row['Nom'],0,1))) <> '' ? 'd\'' : 'de ').$row['Nom'].'" width=25px height=25px></a></td>
-  </tr>';
+    		      <td><a href="gestion_prof.php?option=modifier&classe='.$row['Classe'].'"><img src="../images/modifier.jpeg" alt="" title="Modifier le compte '.(strpbrk("aàäeéèêëiïîoöôuù",strtolower(substr($row['Nom'],0,1))) <> '' ? 'd\'' : 'de ').$row['Nom'].'" width=25px height=25px></a></td>
+  			
+  		    	</tr>';
         }
     }
+   echo '
+    		</table>
+    ';
 
 /* On affiche la liste des comptes profs */
   $sql = 'SELECT Classe, Nom FROM voeux_pp WHERE Classe IN '.$liste_classes.' ORDER BY Classe ASC';
   $req = $conn->query($sql);
-  echo '<style>td{text-align: center;height: 30px;vertical-align: center;}</style>
-  <div style="display: flex; justify-content: space-around;">
-  <div><table>
-  <caption>Comptes des professeurs principaux</caption>
-  <tr>
-    <th style="width: 80px;">Classe</th>
-    <th style="width: 250px;">Professeur principal</th>
-    <th style="width: 90px;">Envoyer mail</th>
-    <th style="width: 90px;">Modifier</th>
-    <th style="width: 90px;">Supprimer</th>
-  </tr>';
+  echo '
+  			<table>
+  				<caption>Comptes des professeurs principaux</caption>
+			    <tr>
+			      <th style="width: 80px;">Classe</th>
+			      <th style="width: 250px;">Professeur principal</th>
+			      <th style="width: 90px;">Envoyer mail</th>
+			      <th style="width: 90px;">Modifier</th>
+			      <th style="width: 90px;">Supprimer</th>
+			    </tr>';
     if ($req->num_rows > 0) {
         while($row = $req->fetch_assoc()) {
           	echo '
-  <tr>
-    <td>'.$row['Classe'].'</td>
-    <td>'.$row['Nom'].'</td>
-    <td><a href="gestion_prof.php?option=mail&classe='.$row['Classe'].'"><img src="../images/mail.png" alt="" title="Envoyer les identifiants par mail à '.$row['Nom'].'" width=25px height=25px></a></td>
-    <td><a href="gestion_prof.php?option=modifier&classe='.$row['Classe'].'"><img src="../images/modifier.jpeg" alt="" title="Modifier le compte '.(strpbrk("aàäeéèêëiïîoöôuù",strtolower(substr($row['Nom'],0,1))) <> '' ? 'd\'' : 'de ').$row['Nom'].'" width=25px height=25px></a></td>
-    <td>'.(in_array($row['Classe'], array('AD','DI')) ? '' : '<a href="gestion_prof.php?option=supprimer&classe='.$row['Classe'].'" title="Supprimer la classe de '.$row['Classe'].'"><img src="../images/supprimer.jpeg" alt="Supprime la classe de '.$row['Classe'].'" width=25px height=25px></a>').'</td>
-  </tr>';
+  				<tr>
+				    <td>'.$row['Classe'].'</td>
+				    <td>'.$row['Nom'].'</td>
+				    <td><a href="gestion_prof.php?option=mail&classe='.$row['Classe'].'"><img src="../images/mail.png" alt="" title="Envoyer les identifiants par mail à '.$row['Nom'].'" width=25px height=25px></a></td>
+				    <td><a href="gestion_prof.php?option=modifier&classe='.$row['Classe'].'"><img src="../images/modifier.jpeg" alt="" title="Modifier le compte '.(strpbrk("aàäeéèêëiïîoöôuù",strtolower(substr($row['Nom'],0,1))) <> '' ? 'd\'' : 'de ').$row['Nom'].'" width=25px height=25px></a></td>
+				    <td>'.(in_array($row['Classe'], array('AD','DI')) ? '' : '<a href="gestion_prof.php?option=supprimer&classe='.$row['Classe'].'" title="Supprimer la classe de '.$row['Classe'].'"><img src="../images/supprimer.jpeg" alt="Supprime la classe de '.$row['Classe'].'" width=25px height=25px></a>').'</td>
+  				</tr>';
         }
     }
     echo '
-  </table>
-<a href="gestion_prof.php?option=ajouter" title="Ajouter une classe"><img src="../images/ajouter.png" alt="Ajouter une classe" width=25px height=25px></a></div>
-<div style="width: 500px;">';
+  			</table>
+			<a href="gestion_prof.php?option=ajouter" title="Ajouter une classe"><img src="../images/ajouter.png" alt="Ajouter une classe" width=25px height=25px></a>
+		</div>
+		<div style="width: 500px;">';
 
 /* Pour envoyer des mail de connexion */
 	if ($_GET['option'] == 'mail') {
 		if ($_GET['classe'] == 'CO') {
-			echo '<form autocomplete="off" method="post" action="gestion_prof.php">
+			echo '
+			<form autocomplete="off" method="post" action="gestion_prof.php">
 			Donnez le nom et le mail du professeur qui recevra les identifiants du compte visiteur.
 			<br/>Nom : <input name="nom" value="">
 	    	<br/>Email : <input name="email" value=""><br/>
@@ -90,29 +96,32 @@ $liste_classes = '("'.join('","',$_SESSION['liste_classes_seconde']).'","'.join(
 			$sql = 'SELECT Nom, mail FROM voeux_pp WHERE Classe="'.$_GET['classe'].'"';
     		$req = $conn->query($sql);
     		$prof = mysqli_fetch_assoc($req);
-			echo '<form method="post" action="gestion_prof.php?mail='.$_GET['classe'].'">
-		Confirmez-vous l\'envoi du mail à '.$prof['Nom'].' sur l\'adresse '.$prof['mail'].' ?
-		<br/>
-		<input type="submit" name="confirm_mail" value="Oui">
-		<input type="submit" name="no_confirm_mail" value="Non">
-		</form>';
+			echo '
+			<form method="post" action="gestion_prof.php?mail='.$_GET['classe'].'">
+			Confirmez-vous l\'envoi du mail à '.$prof['Nom'].' sur l\'adresse '.$prof['mail'].' ?
+			<br/>
+			<input type="submit" name="confirm_mail" value="Oui">
+			<input type="submit" name="no_confirm_mail" value="Non">
+			</form>';
 		}
 	}
   	
 
     /* Pour supprimer une classe de la base de données */
 	if ($_GET['option'] == 'supprimer') {
-		echo '<form method="post" action="gestion_prof.php?classe='.$_GET['classe'].'">
-		Confirmez-vous la suppression de la classe de '.$_GET['classe'].' ?
-		<br/><input type="submit" name="confirm_suppr" value="Oui">
-		<input type="submit" name="no_confirm_suppr" value="Non">
-		</form>';
+		echo '
+			<form method="post" action="gestion_prof.php?classe='.$_GET['classe'].'">
+			Confirmez-vous la suppression de la classe de '.$_GET['classe'].' ?
+			<br/><input type="submit" name="confirm_suppr" value="Oui">
+			<input type="submit" name="no_confirm_suppr" value="Non">
+			</form>';
 	}
 
 	if (isset($_POST['confirm_suppr'])) {
 		$sql = 'DELETE FROM voeux_pp WHERE Classe="'.$_GET['classe'].'"';
 		if ($conn->query($sql)) {
-			echo '<h3>La classe de '.$_GET['classe'].' a bien été supprimée. <a href="gestion_prof.php">Cliquez ici</a> pour voir le résultat.</h3>';
+			echo '
+			<h3>La classe de '.$_GET['classe'].' a bien été supprimée. <a href="gestion_prof.php">Cliquez ici</a> pour voir le résultat.</h3>';
 			// Mettre à jour la liste des classes
 			if (in_array($_GET['classe'],$_SESSION['liste_classes_seconde'])) {
 				unset($_SESSION['liste_classes_seconde'][array_search($_GET['classe'], $_SESSION['liste_classes_seconde'])]);
@@ -125,7 +134,8 @@ $liste_classes = '("'.join('","',$_SESSION['liste_classes_seconde']).'","'.join(
 		if ($conn->query($sql)) {}
 
 		} else {
-			echo '<h3>Il y a eu un problème dans la suppresion de la classe de '.$_GET['classe'].'.</h3>';
+			echo '
+			<h3>Il y a eu un problème dans la suppresion de la classe de '.$_GET['classe'].'.</h3>';
 		}
 	}
 
@@ -251,37 +261,40 @@ $liste_classes = '("'.join('","',$_SESSION['liste_classes_seconde']).'","'.join(
 		    $req = $conn->query($sql);
 		    $prof = mysqli_fetch_assoc($req);
 		    echo '
-	    <h1>Modification d\'un compte</h1>
-	    <form autocomplete="off" action="gestion_prof.php?classe='.$_GET['classe'].'" method="post">
-	    '.(!in_array($_GET['classe'],array('AD','DI','CO')) ? 'Classe : '.$_GET['classe'].'<br/>' : '').'
-	    Nom : <input name="nom" value="'.$prof['Nom'].'" required>
-	    <br/>
-	    Login : <input name="login" value="'.$prof['login'].'" required>
-	    <br/>
-	    Mot de passe : <input name="password" id="password" type="text" title="Seulement des lettres en minuscule ou majuscule ou des chiffres." value="'.$prof['password'].'" required>
-    	<input type="button" name="generer" value="Générer" onclick="javascript:generer_password(\'password\');" />
-	    <br/>'.($_GET['classe'] <> 'CO' ? 'Mail : <input name="email" value="'.$prof['mail'].'" required>' : '').'<br/>
-	    <input type="submit" name="valider_modif" value="Valider">';
+		    <h1>Modification d\'un compte</h1>
+		    <form autocomplete="off" action="gestion_prof.php?classe='.$_GET['classe'].'" method="post">
+		    '.(!in_array($_GET['classe'],array('AD','DI','CO')) ? 'Classe : '.$_GET['classe'].'<br/>' : '').'
+		    Nom : <input name="nom" value="'.$prof['Nom'].'" required>
+		    <br/>
+		    Login : <input name="login" value="'.$prof['login'].'" required>
+		    <br/>
+		    Mot de passe : <input name="password" id="password" type="text" title="Seulement des lettres en minuscule ou majuscule ou des chiffres." value="'.$prof['password'].'" required>
+	    	<input type="button" name="generer" value="Générer" onclick="javascript:generer_password(\'password\');" />
+		    <br/>'.($_GET['classe'] <> 'CO' ? 'Mail : <input name="email" value="'.$prof['mail'].'" required>' : '').'<br/>
+		    <input type="submit" name="valider_modif" value="Valider">
+		    </form>';
 		}
 
 		elseif ($_GET['option'] == 'ajouter') {
 			if (isset($_POST['new_pwd'])) {
 		    	$new_pwd = create_pwd();
 		    }
-    		echo '<h1>Création d\'un compte pour une nouvelle classe</h1>
+    		echo '
+    		<h1>Création d\'un compte pour une nouvelle classe</h1>
     		<form autocomplete="off" method="post" action="gestion_prof.php">
-    	Classe : <input type="text" name="Classe" required>
-    	<br/>
-    	Nom : <input type="text" name="Nom" required>
-    	<br/>
-    	Login : <input type="text" name="login" required>
-    	<br/>
-    	Mot de passe : <input name="password" id="password" type="text" title="Seulement des lettres en minuscule ou majuscule ou des chiffres." required>
-    	<input type="button" name="generer" value="Générer" onclick="javascript:generer_password(\'password\');" />
-    	<br/>
-    	Mail : <input type="text" name="email" required>
-    	<br/>
-    	<input type="submit" name="valider_ajout" value="Valider">
+	    	Classe : <input type="text" name="Classe" required>
+	    	<br/>
+	    	Nom : <input type="text" name="Nom" required>
+	    	<br/>
+	    	Login : <input type="text" name="login" required>
+	    	<br/>
+	    	Mot de passe : <input name="password" id="password" type="text" title="Seulement des lettres en minuscule ou majuscule ou des chiffres." required>
+	    	<input type="button" name="generer" value="Générer" onclick="javascript:generer_password(\'password\');" />
+	    	<br/>
+	    	Mail : <input type="text" name="email" required>
+	    	<br/>
+	    	<input type="submit" name="valider_ajout" value="Valider">
+	    	</form>
 	    ';
 		}
     }
@@ -378,9 +391,12 @@ $liste_classes = '("'.join('","',$_SESSION['liste_classes_seconde']).'","'.join(
 	    } else {echo 'Un des champs n\'est pas au bon format.';}
     }
 
-  echo '</div></div></div>
-  <footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
-</footer>
+  echo '
+			</div>
+		</div>
+	</div>
+    <footer><p>2019-'.date('Y',time()).' - <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="../images/cc.png" title="Ce site est mis à disposition selon les termes de la Licence Creative Commons Attribution - Pas d’Utilisation Commerciale - Partage dans les Mêmes Conditions 4.0 International."/></a> -  <a href="https://github.com/polro/orientation_lycee">Romuald Pol</a></p>
+	</footer>
   </body>
 </html> ';
   $conn->close();
