@@ -1,10 +1,11 @@
 <?php
-$lycee = "Nom du lycée";
+$lycee = 'Nom du lycée';
+$nom_domaine = 'https://www.nom-de-domaine.fr/';
 
-$servername = "servername";
-$username = "username";
-$password = "password";
-$database = "database";
+$servername = 'localhost';
+$username = 'root';
+$password = 'N4De4RECUZqCHS4';
+$database = 'voeux';
 // Create connection
 $conn = new mysqli($servername, $username, $password, $database);
 $conn->set_charset('utf8');

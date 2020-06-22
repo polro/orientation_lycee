@@ -149,7 +149,7 @@ $liste_classes = '("'.join('","',$_SESSION['liste_classes_seconde']).'","'.join(
 			$message .= '<p>Voici vos identifiants pour modifier les choix de vos élèves de la classe '.$prof['Classe'].'.'."\r\n";
 			$message .= '<br/>login : '.$prof['login']."\r\n";
 			$message .= '<br/>mot de passe : '.$prof['password']."\r\n";
-			$message .= '<br/>lien de connexion : https://www.lycee-marxdormoy-creteil.fr/voeux </p>'."\r\n\r\n";
+			$message .= '<br/>lien de connexion : '.$nom_domaine.'voeux </p>'."\r\n\r\n";
 			$message .= '<p>Utilisez ces identifiants avec précaution, rappelez-vous des sages paroles d\'Oncle Ben :'."\r\n";
 			$message .= '<br/>« <em>Un grand pouvoir implique de grandes responsabilités.</em> »</p>'."\r\n";
 			$message .= $admin['Nom']."\r\n";
@@ -177,7 +177,7 @@ $liste_classes = '("'.join('","',$_SESSION['liste_classes_seconde']).'","'.join(
 			$message .= '<p>Voici vos identifiants pour visualiser les choix des élèves du lycée et créer des groupes selon les spécialités.'."\r\n";
 			$message .= '<br/>login : '.$direction['login']."\r\n";
 			$message .= '<br/>mot de passe : '.$direction['password']."\r\n";
-			$message .= '<br/>lien de connexion : https://www.lycee-marxdormoy-creteil.fr/voeux </p>'."\r\n\r\n";
+			$message .= '<br/>lien de connexion : '.$nom_domaine.'voeux </p>'."\r\n\r\n";
 			$message .= '<p>Bien cordialement,</p>'."\r\n";
 			$message .= '<p>'.$admin['Nom'].'</p>'."\r\n";
 
@@ -224,7 +224,7 @@ $liste_classes = '("'.join('","',$_SESSION['liste_classes_seconde']).'","'.join(
 			$message .= '<p>Voici les identifiants pour visualiser le bilan des choix des élèves du lycée.'."\r\n";
 			$message .= '<br/>login : '.$visiteur['login']."\r\n";
 			$message .= '<br/>mot de passe : '.$visiteur['password']."\r\n";
-			$message .= '<br/>lien de connexion : https://www.lycee-marxdormoy-creteil.fr/voeux </p>'."\r\n\r\n";
+			$message .= '<br/>lien de connexion : '.$nom_domaine.'voeux </p>'."\r\n\r\n";
 			$message .= '<p>Bien cordialement,</p>'."\r\n";
 			$message .= '<p>'.$admin['Nom'].'</p>'."\r\n";
 		    
